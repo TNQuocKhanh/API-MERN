@@ -1,10 +1,17 @@
-const express = require('express');
-const OrderModel = require('../models/OrderModel');
+const express = require("express");
+const Order = require("../models/OrderModel");
 const router = express.Router();
+const mongoose = require("mongoose");
 
-router.post('/order/post', async (req, res) => {
-  const data = new OrderModel({
-    name: req.body.name,
+const verifyToken = require("../middlewares/verifyToken");
+
+router.post("/order", verifyToken, async (req, res) => {
+  const data = new Order({
+    _id: new mongoose.Types.ObjectId(),
+    userId: req.body.userId,
+    paymentId: req.body.paymentId,
+    orderDate: req.body.orderDate,
+    info: req.body.info,
   });
 
   try {
@@ -15,31 +22,43 @@ router.post('/order/post', async (req, res) => {
   }
 });
 
-router.get('/order/getAll', async (req, res) => {
+router.get("/order", async (req, res) => {
+  Order.find()
+    .populate("userId")
+    .populate("paymentId")
+    .exec()
+    .then((orders) => {
+      console.log("==order", orders);
+      res.status(200).json({
+        count: orders.length,
+        order: {
+          orders,
+        },
+      });
+    })
+    .catch((error) => {
+      res.status(500).json({ message: error.message });
+    });
+});
+
+router.get("/order/:id", async (req, res) => {
   try {
-    const data = await OrderModel.find();
+    const data = await Order.findById(req.params.id)
+      .populate("paymentId")
+      .populate("userId");
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-router.get('/order/getOne/:id', async (req, res) => {
-  try {
-    const data = await OrderModel.findById(req.params.id);
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-router.patch('/order/update/:id', async (req, res) => {
+router.patch("/order/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
     const updatedData = req.body;
     const options = { new: true };
 
-    const result = await OrderModel.findByIdAndUpdate(id, updatedData, options);
+    const result = await Order.findByIdAndUpdate(id, updatedData, options);
 
     res.send(result);
   } catch (error) {
@@ -47,11 +66,11 @@ router.patch('/order/update/:id', async (req, res) => {
   }
 });
 
-router.delete('/order/delete/:id', async (req, res) => {
+router.delete("/order/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
-    const data = await OrderModel.findByIdAndDelete(id);
-    res.send(`Document with ${data.name} has been deleted..`);
+    const data = await Order.findByIdAndDelete(id);
+    res.send(`Document with ${data.userId} has been deleted..`);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

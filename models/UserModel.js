@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const dataSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema({
+  _id: mongoose.Schema.Types.ObjectId,
   address: {
     type: String,
   },
@@ -18,7 +19,8 @@ const dataSchema = new mongoose.Schema({
   },
   role: {
     type: Array,
+    default: ["CUSTOMER"],
   },
 });
 
-module.exports = mongoose.model('User', dataSchema);
+module.exports = mongoose.model("User", userSchema);

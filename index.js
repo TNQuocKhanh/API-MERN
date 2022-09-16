@@ -1,40 +1,42 @@
-require('dotenv').config();
-const cors = require('cors');
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+require("dotenv").config();
+
+const cors = require("cors");
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
 
 const mongoString = process.env.DATABASE_URL;
+const PORT = 3000;
 
 mongoose.connect(mongoString);
 const database = mongoose.connection;
 
-database.on('error', (error) => {
+database.on("error", (error) => {
   console.log(error);
 });
 
-database.once('connected', () => {
-  console.log('Database Connected');
+database.once("connected", () => {
+  console.log("Database Connected");
 });
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 
-const categoryRoutes = require('./routes/category.routes');
-const productRoutes = require('./routes/product.routes');
-const userRoutes = require('./routes/user.routes');
-const paymentRoutes = require('./routes/payment.routes');
-const orderRoutes = require('./routes/order.routes');
-const orderDetailRoutes = require('./routes/orderDetail.routes');
+const categoryRoutes = require("./routes/category.routes");
+const productRoutes = require("./routes/product.routes");
+const userRoutes = require("./routes/user.routes");
+const paymentRoutes = require("./routes/payment.routes");
+const orderRoutes = require("./routes/order.routes");
+const orderDetailRoutes = require("./routes/orderDetail.routes");
 
-app.use('/api', categoryRoutes);
-app.use('/api', productRoutes);
-app.use('/api', userRoutes);
-app.use('/api', paymentRoutes);
-app.use('/api', orderRoutes);
-app.use('/api', orderDetailRoutes);
+app.use("/api", categoryRoutes);
+app.use("/api", productRoutes);
+app.use("/api", userRoutes);
+app.use("/api", paymentRoutes);
+app.use("/api", orderRoutes);
+app.use("/api", orderDetailRoutes);
 
-app.listen(3000, () => {
-  console.log(`Server Started at ${3000}`);
+app.listen(PORT, () => {
+  console.log(`Server started at http://localhost:${PORT}`);
 });

@@ -1,10 +1,20 @@
-const express = require('express');
-const ProductModel = require('../models/ProductModel');
+const express = require("express");
+const Product = require("../models/ProductModel");
 const router = express.Router();
+const mongoose = require("mongoose");
 
-router.post('/product/post', async (req, res) => {
-  const data = new ProductModel({
+const verifyToken = require("../middlewares/verifyToken");
+
+router.post("/product", verifyToken, async (req, res) => {
+  const data = new Product({
+    _id: new mongoose.Types.ObjectId(),
     name: req.body.name,
+    category: req.body.categoryId,
+    quantity: req.body.quantity,
+    image: req.body.image,
+    price: req.body.price,
+    description: req.body.description,
+    review: req.body.review,
   });
 
   try {
@@ -15,35 +25,45 @@ router.post('/product/post', async (req, res) => {
   }
 });
 
-router.get('/product/getAll', async (req, res) => {
+router.get("/product", async (req, res) => {
+  Product.find()
+    .populate("category")
+    .exec()
+    .then((products) => {
+      res.status(200).json({
+        count: products.length,
+        product: {
+          products,
+        },
+      });
+    })
+    .catch((err) => {
+      res.status(500).json({
+        error: err,
+      });
+    });
+});
+
+router.get("/product/:id", async (req, res) => {
   try {
-    const data = await ProductModel.find();
+    const data = await Product.findById(req.params.id).populate("category");
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-router.get('/product/getOne/:id', async (req, res) => {
-  try {
-    const data = await ProductModel.findById(req.params.id);
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-router.patch('/product/update/:id', async (req, res) => {
+router.patch("/product/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
     const updatedData = req.body;
     const options = { new: true };
 
-    const result = await ProductModel.findByIdAndUpdate(
+    const result = await Product.findByIdAndUpdate(
       id,
       updatedData,
       options
-    );
+    ).populate("category");
 
     res.send(result);
   } catch (error) {
@@ -51,10 +71,10 @@ router.patch('/product/update/:id', async (req, res) => {
   }
 });
 
-router.delete('/product/delete/:id', async (req, res) => {
+router.delete("/product/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
-    const data = await ProductModel.findByIdAndDelete(id);
+    const data = await Product.findByIdAndDelete(id);
     res.send(`Document with ${data.name} has been deleted..`);
   } catch (error) {
     res.status(400).json({ message: error.message });

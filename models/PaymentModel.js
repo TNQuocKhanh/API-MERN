@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
-const dataSchema = new mongoose.Schema({
+const paymentSchema = new mongoose.Schema({
+  _id: mongoose.Schema.Types.ObjectId,
   paymentType: {
     type: String,
   },
@@ -9,7 +10,8 @@ const dataSchema = new mongoose.Schema({
   },
   paymentDate: {
     type: Date,
+    default: Date.now,
   },
 });
 
-module.exports = mongoose.model('Payment', dataSchema);
+module.exports = mongoose.model('Payment', paymentSchema);

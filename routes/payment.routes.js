@@ -1,10 +1,16 @@
-const express = require('express');
-const PaymentModel = require('../models/PaymentModel');
+const express = require("express");
+const Payment = require("../models/PaymentModel");
 const router = express.Router();
+const mongoose = require("mongoose");
 
-router.post('/payment/post', async (req, res) => {
-  const data = new PaymentModel({
-    name: req.body.name,
+const verifyToken = require("../middlewares/verifyToken");
+
+router.post("/payment", verifyToken, async (req, res) => {
+  const data = new Payment({
+    _id: new mongoose.Types.ObjectId(),
+    paymentType: req.body.paymentType,
+    paymentStatus: req.body.paymentStatus,
+    paymentDate: req.body.paymentDate,
   });
 
   try {
@@ -15,35 +21,31 @@ router.post('/payment/post', async (req, res) => {
   }
 });
 
-router.get('/payment/getAll', async (req, res) => {
+router.get("/payment", async (req, res) => {
   try {
-    const data = await PaymentModel.find();
+    const data = await Payment.find();
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-router.get('/payment/getOne/:id', async (req, res) => {
+router.get("/payment/:id", async (req, res) => {
   try {
-    const data = await PaymentModel.findById(req.params.id);
+    const data = await Payment.findById(req.params.id);
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-router.patch('/payment/update/:id', async (req, res) => {
+router.patch("/payment/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
     const updatedData = req.body;
     const options = { new: true };
 
-    const result = await PaymentModel.findByIdAndUpdate(
-      id,
-      updatedData,
-      options
-    );
+    const result = await Payment.findByIdAndUpdate(id, updatedData, options);
 
     res.send(result);
   } catch (error) {
@@ -51,11 +53,11 @@ router.patch('/payment/update/:id', async (req, res) => {
   }
 });
 
-router.delete('/payment/delete/:id', async (req, res) => {
+router.delete("/payment/:id", verifyToken, async (req, res) => {
   try {
     const id = req.params.id;
-    const data = await PaymentModel.findByIdAndDelete(id);
-    res.send(`Document with ${data.name} has been deleted..`);
+    const data = await Payment.findByIdAndDelete(id);
+    res.send(`Document with ${data.paymentType} has been deleted..`);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

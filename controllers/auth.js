@@ -16,7 +16,6 @@ exports.signup = (req, res) => {
     user.salt = undefined;
     user.hashed_password = undefined;
     mailer.sendMail(req.body.email,'GreenFood','<p>Chúc mừng bạn đã đăng ký tài khoản thành công.</p>')
-    console.log('==', user)
     res.json({
       user,
     });
@@ -41,8 +40,8 @@ exports.signin = (req, res) => {
       process.env.SECRET
     );
     res.cookie('t', token, { expire: new Date() + 9999 });
-    const { _id, name, email, role } = user;
-    return res.json({ token, user: { _id, email, name, role } });
+    const { _id, name, email, isAdmin } = user;
+    return res.json({ token, user: { _id, email, name, isAdmin } });
   });
 };
 
@@ -56,23 +55,3 @@ exports.requireSignin = expressJwt({
   // algorithms: ['RS256'],
   userProperty: 'auth',
 });
-
-exports.isAuth = (req, res, next) => {
-  let user = req.profile && req.auth && req.profile._id == req.auth._id;
-  if (!user) {
-    return res.status(403).json({
-      error: 'Access denied',
-    });
-  }
-  next();
-};
-
-exports.isAdmin = (req, res, next) => {
-  if (req.body.role === 0) {
-    return res.status(403).json({
-      error: 'Admin resource! Access denied',
-    });
-  }
-  next();
-};
-

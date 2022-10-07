@@ -6,10 +6,11 @@ const {
   createProduct,
   getProductById,
   updateProduct,
-  deleteProduct
+  deleteProduct,
 } = require('../controllers/product');
 
 const { requireSignin } = require('../controllers/auth')
+
 
 router.get('/product', getAllProducts);
 router.post('/product', requireSignin, createProduct);

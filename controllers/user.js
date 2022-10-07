@@ -11,7 +11,10 @@ const mailer = require('../utils/mailer')
 exports.getUsers = async (req, res) => {
   try {
     const data = await User.find();
-    res.json(data);
+    const user = _.map(data, item => {
+     return  _.omit(item.toJSON(), 'hashed_password')
+    })
+    res.json(user);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -20,7 +23,8 @@ exports.getUsers = async (req, res) => {
 exports.getUserById = async (req, res) => {
   try {
     const data = await User.findById(req.params.userId);
-    res.json(data);
+    
+    res.json(_.omit(data.toJSON(), 'hashed_password'));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -50,54 +54,55 @@ exports.deletaUser =  async (req, res) => {
   }
 };
 
-exports.register =  async (req, res) => {
-  const data = new User({
-    _id: new mongoose.Types.ObjectId(),
-    address: req.body.address,
-    phoneNumber: req.body.phoneNumber,
-    userName: req.body.userName,
-    password: bcrypt.hashSync(req.body.password, 10),
-    email: req.body.email,
-    role: req.body.role,
-  });
+//exports.register =  async (req, res) => {
+  //const data = new User({
+    //_id: new mongoose.Types.ObjectId(),
+    //address: req.body.address,
+    //phoneNumber: req.body.phoneNumber,
+    //userName: req.body.userName,
+    //password: bcrypt.hashSync(req.body.password, 10),
+    //email: req.body.email,
+    //role: req.body.role,
+    //isAdmin: req.body.isAdmin,
+  //});
 
-  try {
-    const dataToSave = await data.save();
-    res.status(200).json(dataToSave);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
+  //try {
+    //const dataToSave = await data.save();
+    //res.status(200).json(dataToSave);
+  //} catch (error) {
+    //res.status(400).json({ message: error.message });
+  //}
+//};
 
-exports.login =  async (req, res) => {
-  User.findOne({
-    email: req.body.email,
-  }).exec((err, user) => {
-    if (err) {
-      res.status(500).send({ message: err });
-      return;
-    }
+//exports.login =  async (req, res) => {
+  //User.findOne({
+    //email: req.body.email,
+  //}).exec((err, user) => {
+    //if (err) {
+      //res.status(500).send({ message: err });
+      //return;
+    //}
 
-    if (!user) {
-      return res.status(404).send({ message: "User Not found." });
-    }
+    //if (!user) {
+      //return res.status(404).send({ message: "User Not found." });
+    //}
 
-    var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
+    //var passwordIsValid = bcrypt.compareSync(req.body.password, user.password);
 
-    if (!passwordIsValid) {
-      return res.status(401).send({ message: "Invalid Password!" });
-    }
+    //if (!passwordIsValid) {
+      //return res.status(401).send({ message: "Invalid Password!" });
+    //}
 
-    var token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
-      expiresIn: 86400,
-    });
+    //var token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, {
+      //expiresIn: 86400,
+    //});
 
-    res.status(200).send({
-      user: _.omit(user.toJSON(), "password"),
-      token,
-    });
-  });
-};
+    //res.status(200).send({
+      //user: _.omit(user.toJSON(), "password"),
+      //token,
+    //});
+  //});
+//};
 
 exports.forgotPassword =  async (req, res) => {
   User.findOne({

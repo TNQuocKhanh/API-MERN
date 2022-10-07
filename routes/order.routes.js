@@ -8,6 +8,7 @@ const {
   updateOrder,
   deleteOrder,
   getIncome,
+  filterOrder,
 } = require('../controllers/order');
 
 const { requireSignin } = require('../controllers/auth')
@@ -19,6 +20,7 @@ router.delete('/order/:orderId', requireSignin, deleteOrder);
 router.get('/order/:orderId', getOrderById);
 
 router.get('/income', getIncome)
+router.get('/filterOrder/:dateFrom/:dateTo', filterOrder)
 
 module.exports = router;
 

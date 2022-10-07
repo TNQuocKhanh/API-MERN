@@ -2,6 +2,8 @@ const express = require("express");
 const Product = require("../models/ProductModel");
 const router = express.Router();
 const mongoose = require("mongoose");
+const { isValidObjectId } = require("../utils/check")
+const { ObjectId  } = require('mongodb')
 
 exports.createProduct =  async (req, res) => {
   const data = new Product({
@@ -25,9 +27,28 @@ exports.createProduct =  async (req, res) => {
 };
 
 exports.getAllProducts =  async (req, res) => {
- try {
-   const data = await Product.find().populate("category").exec()
-   res.json(data)
+  const name = req.query.search
+  console.log('==', name)
+  try {
+    if(isValidObjectId(name)){
+      const data = await Product.aggregate([
+        {
+          //$match: { category: { _id: '633554ca0e4d6f99a67693c9' } },
+          $match: { category: { name: 'Thit lon' } }
+        },
+      ])
+      res.json(data)
+    }else{
+    if(name){
+      const data = await Product.find({
+        'name': new RegExp(name, 'i')
+      })
+      res.json(data)
+    }else{
+      const data = await Product.find().populate("category").exec()
+      res.json(data)
+    }
+    }
  }catch(error){
    res.status(500).json({ message: error.message })
  }
@@ -69,4 +90,20 @@ exports.deleteProduct = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+exports.searchProduct = async (req, res) => { 
+  try {
+    console.log(req)
+    const key = req.params.key;
+    const values = await Product.aggregate([
+      {
+        $match: { "name": key  },
+      },
+    ])
+    console.log(values)
+  res.json(values);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+}
 

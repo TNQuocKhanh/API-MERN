@@ -4,6 +4,7 @@ const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const passport = require("passport")
 
 const mongoString = process.env.DATABASE_URL;
 const PORT = 3000;
@@ -18,10 +19,16 @@ database.on("error", (error) => {
 database.once("connected", () => {
   console.log("Database Connected");
 });
+
+require('./utils/passport')(passport)
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 const categoryRoutes = require("./routes/category.routes");
 const productRoutes = require("./routes/product.routes");

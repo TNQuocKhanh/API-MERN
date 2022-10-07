@@ -24,10 +24,11 @@ const OrderSchema = new mongoose.Schema({
     default: 'Not processed',
     enum: [
       'Not processed',
-      'B',
-      'C',
+      'Shipping',
+      'Done',
     ],
   },
+  total: { type: Number },
   updated: Date,
   user: { type: ObjectId, ref: 'User'  }
 }, {

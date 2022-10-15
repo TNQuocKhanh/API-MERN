@@ -1,7 +1,7 @@
 const User = require('../models/UserModel');
-const jwt = require('jsonwebtoken'); 
-const expressJwt = require('express-jwt'); 
-const mailer = require('../utils/mailer')
+const jwt = require('jsonwebtoken');
+const expressJwt = require('express-jwt');
+const mailer = require('../utils/mailer');
 
 require('dotenv').config();
 
@@ -15,7 +15,11 @@ exports.signup = (req, res) => {
     }
     user.salt = undefined;
     user.hashed_password = undefined;
-    mailer.sendMail(req.body.email,'GreenFood','<p>Chúc mừng bạn đã đăng ký tài khoản thành công.</p>')
+    mailer.sendMail(
+      req.body.email,
+      'GreenFood',
+      '<p>Chúc mừng bạn đã đăng ký tài khoản thành công.</p>'
+    );
     res.json({
       user,
     });
@@ -35,10 +39,7 @@ exports.signin = (req, res) => {
         error: "Email and password didn't match",
       });
     }
-    const token = jwt.sign(
-      { _id: user._id },
-      process.env.SECRET
-    );
+    const token = jwt.sign({ _id: user._id }, process.env.SECRET);
     res.cookie('t', token, { expire: new Date() + 9999 });
     const { _id, name, email, isAdmin } = user;
     return res.json({ token, user: { _id, email, name, isAdmin } });
@@ -55,3 +56,15 @@ exports.requireSignin = expressJwt({
   // algorithms: ['RS256'],
   userProperty: 'auth',
 });
+
+exports.isAdmin = (req, res, next) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    jwt.verify(token, process.env.SECRET);
+    next();
+  } catch (err) {
+    res.status(401).json({
+      error: 'Not authorized as an admin',
+    });
+  }
+};

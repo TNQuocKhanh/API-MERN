@@ -1,7 +1,7 @@
-const express = require("express");
-const { Order } = require("../models/OrderModel");
+const express = require('express');
+const { Order } = require('../models/OrderModel');
 const router = express.Router();
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 exports.createOrder = async (req, res) => {
   const data = new Order({
@@ -23,33 +23,31 @@ exports.createOrder = async (req, res) => {
 };
 
 exports.getOrders = async (req, res) => {
-  const dateFrom = req.query.dateFrom
-  const dateTo = req.query.dateTo
-  console.log(typeof dateFrom, dateTo)
+  const dateFrom = req.query.dateFrom;
+  const dateTo = req.query.dateTo;
 
   try {
-    if(dateFrom && dateTo){
-      console.log(1)
+    if (dateFrom && dateTo) {
       const data = await Order.aggregate([
         {
-           $match: { createdAt: { $gte: new Date(dateFrom), $lt: new Date(dateTo) } }
-        }
-      ])
-      res.json(data)
-    }else{
-      console.log(2)
-      const data = await Order.find().populate("user").exec()
-      res.json(data)
+          $match: {
+            createdAt: { $gte: new Date(dateFrom), $lt: new Date(dateTo) },
+          },
+        },
+      ]);
+      res.json(data);
+    } else {
+      const data = await Order.find().populate('user').exec();
+      res.json(data);
     }
-  }catch(error){
-    res.status(500).json({ message: error.message })
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
 exports.getOrderById = async (req, res) => {
   try {
-    const data = await Order.findById(req.params.orderId)
-      .populate("user");
+    const data = await Order.findById(req.params.orderId).populate('user');
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -74,83 +72,61 @@ exports.deleteOrder = async (req, res) => {
   try {
     const id = req.params.orderId;
     const data = await Order.findByIdAndDelete(id);
-    res.json(data)
-
+    res.json(data);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
 exports.getIncome = async (req, res) => {
-  const date = new Date()
-  const lastMonth = new Date(date.setMonth(date.getMonth()-1))
-  const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth()-1))
+  const date = new Date();
+  const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
+  const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
 
-  console.log('==', previousMonth, lastMonth)
+  console.log('==', previousMonth, lastMonth);
 
-  try{
+  try {
     const income = await Order.aggregate([
       {
-        $match: { createdAt: {$gte: previousMonth} }
+        $match: { createdAt: { $gte: previousMonth } },
       },
       {
         $project: {
-          month: { $month: "$createdAt" },
-          sales: "$total",
-          amount: "$amount",
+          month: { $month: '$createdAt' },
+          sales: '$total',
+          amount: '$amount',
         },
       },
-        {
-          $group: {
-            _id: "$month",
-            totalAvenue: {$sum: "$sales" },
-            total: { $sum: "$amount" }
-          },
+      {
+        $group: {
+          _id: '$month',
+          totalAvenue: { $sum: '$sales' },
+          total: { $sum: '$amount' },
         },
-    ])
-    res.status(200).json(income)
-  }catch(err){
-    res.status(500).json(err)
+      },
+    ]);
+    res.status(200).json(income);
+  } catch (err) {
+    res.status(500).json(err);
   }
-}
+};
 
 exports.filterOrder = async (req, res) => {
-  const date = new Date()
+  const date = new Date();
 
-  const dateFrom = new Date(req.params.dateFrom) 
-  const dateTo = new Date(req.params.dateTo)
+  const dateFrom = new Date(req.params.dateFrom);
+  const dateTo = new Date(req.params.dateTo);
 
-  console.log('==', dateFrom, dateTo)
-  try{
+  console.log('==', dateFrom, dateTo);
+  try {
     const income = await Order.aggregate([
       {
-        $match: { createdAt: {$gte: dateFrom, $lt: dateTo } }
+        $match: { createdAt: { $gte: dateFrom, $lt: dateTo } },
       },
-    ])
-    console.log(income)
-    res.status(200).json(income)
-  }catch(err){
-    res.status(500).json(err)
+    ]);
+    console.log(income);
+    res.status(200).json(income);
+  } catch (err) {
+    res.status(500).json(err);
   }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+};

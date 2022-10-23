@@ -93,11 +93,11 @@ exports.changePassword = async (req, res) => {
       }
 
       user.hashed_password = user.encryptPassword(newPassword);
-      mailer.sendMail(
-        req.body.email,
-        'GreenFood',
-        `<p>Thay đổi mật khẩu thành công.</p>`
-      );
+      // mailer.sendMail(
+      //   req.body.email,
+      //   'GreenFood',
+      //   `<p>Thay đổi mật khẩu thành công.</p>`
+      // );
       res.status(200).json(user.save());
     }
   });

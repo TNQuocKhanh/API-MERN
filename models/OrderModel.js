@@ -21,11 +21,12 @@ const OrderSchema = new mongoose.Schema({
   address: String,
   status: {
     type: String,
-    default: 'Not processed',
+    default: 'PROCESSING',
     enum: [
-      'Not processed',
-      'Shipping',
-      'Done',
+      'CONFIRMED',
+      'DELIVERING',
+      'DONE',
+      'CANCEL',
     ],
   },
   total: { type: Number },

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { ObjectId  } = mongoose.Schema
 
 const productSchema = new mongoose.Schema({
-name: {
+    name: {
       type: String,
       trim: true,
       required: true,
@@ -34,10 +34,32 @@ name: {
     photo: {
       type: String,
     },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    reviews: {
+      user: {
+        type: ObjectId,
+        ref: 'User',
+      },
+      rating: {
+        type: Number,
+      },
+      comment: {
+        type: String,
+      },
+    },
+    supplier: {
+      name: {
+        type: String,
+      },
+    },
     shipping: {
       required: false,
       type: Boolean,
     },
+   
   },
   { timestamps: true }
 );

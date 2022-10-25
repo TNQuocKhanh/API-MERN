@@ -2,6 +2,7 @@ const express = require('express');
 const { Order } = require('../models/OrderModel');
 const router = express.Router();
 const mongoose = require('mongoose');
+const _ = require('lodash')
 
 exports.createOrder = async (req, res) => {
   const data = new Order({
@@ -38,7 +39,11 @@ exports.getOrders = async (req, res) => {
       res.json(data);
     } else {
       const data = await Order.find().populate('user').exec();
-      res.json(data);
+      const dataToSave = _.map(data, (item) => {
+         return _.omit(item.toJSON(),
+         ['user.hashed_password', 'user.salt'])
+      })
+      res.json(dataToSave);
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -48,7 +53,9 @@ exports.getOrders = async (req, res) => {
 exports.getOrderById = async (req, res) => {
   try {
     const data = await Order.findById(req.params.orderId).populate('user');
-    res.json(data);
+    const dataToSave = _.omit(data.toJSON(),
+    ['user.hashed_password', 'user.salt'])
+    res.json(dataToSave);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

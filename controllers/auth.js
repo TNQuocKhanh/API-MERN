@@ -15,7 +15,7 @@ exports.signup = (req, res) => {
     }
     user.salt = undefined;
     user.hashed_password = undefined;
-    mailer.sendMail(req.body.email,'GreenFood','<p>Chúc mừng bạn đã đăng ký tài khoản thành công.</p>')
+    //mailer.sendMail(req.body.email,'GreenFood','<p>Chúc mừng bạn đã đăng ký tài khoản thành công.</p>')
     res.json({
       user,
     });
@@ -40,8 +40,7 @@ exports.signin = (req, res) => {
       process.env.SECRET
     );
     res.cookie('t', token, { expire: new Date() + 9999 });
-    const { _id, name, email, isAdmin } = user;
-    return res.json({ token, user: { _id, email, name, isAdmin } });
+    return res.json({ token, user });
   });
 };
 

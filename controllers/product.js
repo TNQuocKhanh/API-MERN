@@ -2,6 +2,7 @@ const express = require('express');
 const Product = require('../models/ProductModel');
 const router = express.Router();
 const mongoose = require('mongoose');
+const _ =  require('lodash')
 
 exports.createProduct = async (req, res) => {
   const data = new Product({
@@ -14,6 +15,7 @@ exports.createProduct = async (req, res) => {
     photo: req.body.photo,
     sold: req.body.sold,
     shipping: req.body.shipping,
+    supplier: req.body.supplier,
   });
 
   try {
@@ -33,8 +35,21 @@ exports.getAllProducts = async (req, res) => {
       });
       res.json(data);
     } else {
-      const data = await Product.find().populate('category').exec();
-      res.json(data);
+      const data = await Product.find().populate('category')
+            .populate({
+               path: 'reviews',
+               populate: {
+                 path: 'user',
+                 model: 'User',
+               }
+            });
+
+      const dataToSave = _.map(data, (item) => {
+        console.log('====', item)
+        return _.omit(item.toJSON(), 
+      ['reviews.user.hashed_password', 'reviews.user.salt'])
+      })
+      res.json(dataToSave);
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -43,10 +58,17 @@ exports.getAllProducts = async (req, res) => {
 
 exports.getProductById = async (req, res) => {
   try {
-    const data = await Product.findById(req.params.productId).populate(
-      'category'
-    );
-    res.json(data);
+    const data = await Product.findById(req.params.productId)            .populate('category')
+            .populate({
+               path: 'reviews',
+               populate: {
+                 path: 'user',
+                 model: 'User',
+               }
+             });
+    const dataToSave = _.omit(data.toJSON(), 
+      ['reviews.user.hashed_password', 'reviews.user.salt'])
+    res.json(dataToSave);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -62,9 +84,18 @@ exports.updateProduct = async (req, res) => {
       id,
       updatedData,
       options
-    ).populate('category');
+    ).populate('category')
+            .populate({
+               path: 'reviews',
+               populate: {
+                 path: 'user',
+                 model: 'User',
+               }
+            });
+    const dataToSave = _.omit(result.toJSON(), 
+  ['reviews.user.hashed_password', 'reviews.user.salt'])
 
-    res.send(result);
+    res.send(dataToSave);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

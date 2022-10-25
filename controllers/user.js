@@ -12,7 +12,7 @@ exports.getUsers = async (req, res) => {
   try {
     const data = await User.find();
     const user = _.map(data, (item) => {
-      return _.omit(item.toJSON(), 'hashed_password');
+      return _.omit(item.toJSON(), ['hashed_password', 'salt']);
     });
     res.json(user);
   } catch (error) {
@@ -24,7 +24,7 @@ exports.getUserById = async (req, res) => {
   try {
     const data = await User.findById(req.params.userId);
 
-    res.json(_.omit(data.toJSON(), 'hashed_password'));
+    res.json(_.omit(data.toJSON(), ['hashed_password', 'salt']));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -64,13 +64,13 @@ exports.forgotPassword = async (req, res) => {
       const randomPassword = Math.floor(
         100000 + Math.random() * 900000
       ).toString();
-      console.log(randomPassword);
+      console.log('New password: ', randomPassword);
       user.hashed_password = user.encryptPassword(randomPassword);
-      mailer.sendMail(
-        req.body.email,
-        'GreenFood',
-        `<p>Mật khẩu mới của bạn là: ${randomPassword}</p>`
-      );
+      //mailer.sendMail(
+        //req.body.email,
+        //'GreenFood',
+        //`<p>Mật khẩu mới của bạn là: ${randomPassword}</p>`
+      //);
       res.status(200).json(user.save());
     }
   });

@@ -38,7 +38,7 @@ const productSchema = new mongoose.Schema({
       type: Number,
       default: 0,
     },
-    reviews: {
+    reviews: [{
       user: {
         type: ObjectId,
         ref: 'User',
@@ -49,7 +49,7 @@ const productSchema = new mongoose.Schema({
       comment: {
         type: String,
       },
-    },
+    }],
     supplier: {
       name: {
         type: String,
@@ -59,7 +59,6 @@ const productSchema = new mongoose.Schema({
       required: false,
       type: Boolean,
     },
-   
   },
   { timestamps: true }
 );

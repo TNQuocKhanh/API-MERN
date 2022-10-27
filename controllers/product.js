@@ -58,7 +58,7 @@ exports.getAllProducts = async (req, res) => {
 
 exports.getProductById = async (req, res) => {
   try {
-    const data = await Product.findById(req.params.productId)            .populate('category')
+    const data = await Product.findById(req.params.productId).populate('category')
             .populate({
                path: 'reviews',
                populate: {
@@ -110,3 +110,56 @@ exports.deleteProduct = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+exports.createComment = async (req, res) => {
+  try {
+    const { rating, comment, user } = req.body
+
+    const review = {
+      rating,
+      comment, 
+      user
+    }
+
+    const product = await Product.findById(req.params.productId)
+
+    const findUserReview = product.reviews.find(item =>
+        item.user.toString()===req.body.user
+    )
+
+    const isReviewed = findUserReview ? true : false
+
+    if(isReviewed){
+      product.reviews.forEach(review => {
+        if(review.user.toString() === req.body.user){
+          review.rating = rating,
+            review.comment = comment
+        }
+      })
+    }else{
+    product.reviews.push(review)
+    }
+
+    product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0)/product.reviews.length
+
+    await product.save()
+    res.status(200).json({ success: true })
+
+  }catch(error){
+    res.status(500).json({ message: error.message })
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

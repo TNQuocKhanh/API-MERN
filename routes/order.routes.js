@@ -20,7 +20,6 @@ router.delete('/order/:orderId', requireSignin, deleteOrder);
 router.get('/order/:orderId', getOrderById);
 
 router.get('/income', getIncome)
-router.get('/filterOrder/:dateFrom/:dateTo', filterOrder)
 
 module.exports = router;
 

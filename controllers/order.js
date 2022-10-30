@@ -117,23 +117,3 @@ exports.getIncome = async (req, res) => {
     res.status(500).json(err);
   }
 };
-
-exports.filterOrder = async (req, res) => {
-  const date = new Date();
-
-  const dateFrom = new Date(req.params.dateFrom);
-  const dateTo = new Date(req.params.dateTo);
-
-  console.log('==', dateFrom, dateTo);
-  try {
-    const income = await Order.aggregate([
-      {
-        $match: { createdAt: { $gte: dateFrom, $lt: dateTo } },
-      },
-    ]);
-    console.log(income);
-    res.status(200).json(income);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-};

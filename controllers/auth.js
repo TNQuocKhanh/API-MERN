@@ -1,7 +1,8 @@
 const User = require('../models/UserModel');
 const jwt = require('jsonwebtoken'); 
 const expressJwt = require('express-jwt'); 
-const mailer = require('../utils/mailer')
+const mailer = require('../utils/mailer');
+const passport = require('passport');
 
 require('dotenv').config();
 
@@ -51,6 +52,5 @@ exports.signout = (req, res) => {
 
 exports.requireSignin = expressJwt({
   secret: process.env.SECRET,
-  // algorithms: ['RS256'],
   userProperty: 'auth',
 });

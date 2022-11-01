@@ -51,13 +51,8 @@ const productSchema = new mongoose.Schema({
       },
     }],
     supplier: {
-      name: {
-        type: String,
-      },
-    },
-    shipping: {
-      required: false,
-      type: Boolean,
+      type: ObjectId,
+      ref: 'Organizer',
     },
   },
   { timestamps: true }

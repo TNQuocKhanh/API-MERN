@@ -14,7 +14,6 @@ exports.createProduct = async (req, res) => {
     description: req.body.description,
     photo: req.body.photo,
     sold: req.body.sold,
-    shipping: req.body.shipping,
     supplier: req.body.supplier,
   });
 
@@ -42,10 +41,9 @@ exports.getAllProducts = async (req, res) => {
                  path: 'user',
                  model: 'User',
                }
-            });
+            }).populate('supplier');
 
       const dataToSave = _.map(data, (item) => {
-        console.log('====', item)
         return _.omit(item.toJSON(), 
       ['reviews.user.hashed_password', 'reviews.user.salt'])
       })
@@ -65,7 +63,7 @@ exports.getProductById = async (req, res) => {
                  path: 'user',
                  model: 'User',
                }
-             });
+             }).populate('supplier');
     const dataToSave = _.omit(data.toJSON(), 
       ['reviews.user.hashed_password', 'reviews.user.salt'])
     res.json(dataToSave);

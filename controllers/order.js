@@ -1,8 +1,9 @@
 const express = require('express');
 const { Order } = require('../models/OrderModel');
+const Product = require('../models/ProductModel');
 const router = express.Router();
 const mongoose = require('mongoose');
-const _ = require('lodash')
+const _ = require('lodash');
 
 exports.createOrder = async (req, res) => {
   const data = new Order({
@@ -62,18 +63,45 @@ exports.getOrderById = async (req, res) => {
 };
 
 exports.updateOrder = async (req, res) => {
-  try {
-    const id = req.params.orderId;
-    const updatedData = req.body;
-    const options = { new: true };
+  //try {
+    //const id = req.params.orderId;
+    //const updatedData = req.body;
+    //const options = { new: true };
 
-    const result = await Order.findByIdAndUpdate(id, updatedData, options);
+    //const result = await Order.findByIdAndUpdate(id, updatedData, options);
 
-    res.send(result);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    //res.send(result);
+  //} catch (error) {
+    //res.status(500).json({ message: error.message });
+  //}
+  try{
+  const order = await Order.findById(req.params.orderId)
+
+    console.log('==order', order)
+
+    order.products.forEach(async item => {
+      //console.log('==item', item.product.toJSON())
+      await updateStock(item.product, item.count)
+
+    })
+
+    order.status = req.body.status
+    res.status(200).json(order)
+  }catch (error) {
+    res.status(500).json({ message: error.message })
   }
 };
+
+async function updateStock(id, quantity) {
+    const product = await Product.findById(id);
+    
+    console.log('==prev', product)
+
+    product.sold = product.sold + quantity;
+
+    console.log('==product', product.sold)
+   await product.save({ validateBeforeSave: false })
+}
 
 exports.deleteOrder = async (req, res) => {
   try {

@@ -93,13 +93,15 @@ const userRoutes = require('./routes/user.routes');
 const orderRoutes = require('./routes/order.routes');
 const authRoutes = require('./routes/auth.routes');
 const paymentRoutes = require('./routes/payment.routes');
+const organizerRoute = require('./routes/organizer.routes');
 
 app.use('/api', categoryRoutes);
 app.use('/api', productRoutes);
 app.use('/api', userRoutes);
 app.use('/api', orderRoutes);
 app.use('/api', authRoutes);
-app.use('/api', paymentRoutes)
+app.use('/api', paymentRoutes);
+app.use('/api', organizerRoute);
 
 app.listen(PORT, () => {
   console.log(`Server started at http://localhost:${PORT}`);

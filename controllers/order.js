@@ -14,6 +14,7 @@ exports.createOrder = async (req, res) => {
     address: req.body.address,
     total: req.body.total,
     status: req.body.status,
+    method: req.body.method,
   });
 
   try {

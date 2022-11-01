@@ -31,6 +31,14 @@ const OrderSchema = new mongoose.Schema({
   },
   total: { type: Number },
   updated: Date,
+  method: {
+    type: String,
+    default: 'COD',
+    enum: [
+      'COD',
+      'PAYPAL'
+    ],
+  },
   user: { type: ObjectId, ref: 'User'  }
 }, {
 timestamps: true

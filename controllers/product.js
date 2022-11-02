@@ -41,8 +41,13 @@ exports.getAllProducts = async (req, res) => {
                  path: 'user',
                  model: 'User',
                }
-            }).populate('supplier');
-
+            }).populate({
+               path: 'supplier',
+              populate: {
+                path: 'id',
+                model: 'Organizer',
+              }
+            })
       const dataToSave = _.map(data, (item) => {
         return _.omit(item.toJSON(), 
       ['reviews.user.hashed_password', 'reviews.user.salt'])
@@ -63,7 +68,13 @@ exports.getProductById = async (req, res) => {
                  path: 'user',
                  model: 'User',
                }
-             }).populate('supplier');
+            }).populate({
+               path: 'supplier',
+               populate: {
+                path: 'id',
+                model: 'Organizer',
+              }
+            });
     const dataToSave = _.omit(data.toJSON(), 
       ['reviews.user.hashed_password', 'reviews.user.salt'])
     res.json(dataToSave);

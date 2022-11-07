@@ -16,7 +16,7 @@ exports.signup = (req, res) => {
     }
     user.salt = undefined;
     user.hashed_password = undefined;
-    //mailer.sendMail(req.body.email,'GreenFood','<p>Chúc mừng bạn đã đăng ký tài khoản thành công.</p>')
+    mailer.sendMail(req.body.email,'HDKMart','<p>Chúc mừng bạn đã đăng ký tài khoản thành công.</p>')
     res.json({
       user,
     });

@@ -8,6 +8,7 @@ const {
   updateProduct,
   deleteProduct,
   createComment,
+  getUnsoldProduct,
 } = require('../controllers/product');
 
 const { requireSignin } = require('../controllers/auth')
@@ -19,6 +20,7 @@ router.put('/product/:productId',requireSignin, updateProduct);
 router.delete('/product/:productId',requireSignin, deleteProduct);
 router.get('/product/:productId', getProductById);
 router.put('/comment/:productId', createComment)
+router.get('/unsold', requireSignin, getUnsoldProduct)
 
 module.exports = router;
 

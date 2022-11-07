@@ -9,6 +9,7 @@ const {
   deleteOrder,
   getIncome,
   filterOrder,
+  getTotalProfit,
 } = require('../controllers/order');
 
 const { requireSignin } = require('../controllers/auth')

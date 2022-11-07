@@ -1,9 +1,9 @@
-const express = require('express');
-const { Order } = require('../models/OrderModel');
-const Product = require('../models/ProductModel');
+const express = require("express");
+const { Order } = require("../models/OrderModel");
+const Product = require("../models/ProductModel");
 const router = express.Router();
-const mongoose = require('mongoose');
-const _ = require('lodash');
+const mongoose = require("mongoose");
+const _ = require("lodash");
 
 exports.createOrder = async (req, res) => {
   const data = new Order({
@@ -40,11 +40,10 @@ exports.getOrders = async (req, res) => {
       ]);
       res.json(data);
     } else {
-      const data = await Order.find().populate('user').exec();
+      const data = await Order.find().populate("user").exec();
       const dataToSave = _.map(data, (item) => {
-         return _.omit(item.toJSON(),
-         ['user.hashed_password', 'user.salt'])
-      })
+        return _.omit(item.toJSON(), ["user.hashed_password", "user.salt"]);
+      });
       res.json(dataToSave);
     }
   } catch (error) {
@@ -54,9 +53,11 @@ exports.getOrders = async (req, res) => {
 
 exports.getOrderById = async (req, res) => {
   try {
-    const data = await Order.findById(req.params.orderId).populate('user');
-    const dataToSave = _.omit(data.toJSON(),
-    ['user.hashed_password', 'user.salt'])
+    const data = await Order.findById(req.params.orderId).populate("user");
+    const dataToSave = _.omit(data.toJSON(), [
+      "user.hashed_password",
+      "user.salt",
+    ]);
     res.json(dataToSave);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -64,44 +65,27 @@ exports.getOrderById = async (req, res) => {
 };
 
 exports.updateOrder = async (req, res) => {
-  //try {
-    //const id = req.params.orderId;
-    //const updatedData = req.body;
-    //const options = { new: true };
+  try {
+    const order = await Order.findById(req.params.orderId);
 
-    //const result = await Order.findByIdAndUpdate(id, updatedData, options);
+    order.products.forEach(async (item) => {
+      await updateStock(item.product, item.count);
+    });
 
-    //res.send(result);
-  //} catch (error) {
-    //res.status(500).json({ message: error.message });
-  //}
-  try{
-  const order = await Order.findById(req.params.orderId)
-
-    console.log('==order', order)
-
-    order.products.forEach(async item => {
-      //console.log('==item', item.product.toJSON())
-      await updateStock(item.product, item.count)
-
-    })
-
-    order.status = req.body.status
-    res.status(200).json(order)
-  }catch (error) {
-    res.status(500).json({ message: error.message })
+    order.status = req.body.status;
+    await order.save()
+    res.status(200).json(order);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
 async function updateStock(id, quantity) {
-    const product = await Product.findById(id);
-    
-    console.log('==prev', product)
+  const product = await Product.findById(id);
 
-    product.sold = product.sold + quantity;
+  product.sold = product.sold + quantity;
 
-    console.log('==product', product.sold)
-   await product.save({ validateBeforeSave: false })
+  await product.save({ validateBeforeSave: false });
 }
 
 exports.deleteOrder = async (req, res) => {
@@ -119,7 +103,7 @@ exports.getIncome = async (req, res) => {
   const lastMonth = new Date(date.setMonth(date.getMonth() - 1));
   const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
 
-  console.log('==', previousMonth, lastMonth);
+  console.log("==", previousMonth, lastMonth);
 
   try {
     const income = await Order.aggregate([
@@ -128,16 +112,21 @@ exports.getIncome = async (req, res) => {
       },
       {
         $project: {
-          month: { $month: '$createdAt' },
-          sales: '$total',
-          amount: '$amount',
+          month: { $month: "$createdAt" },
+          sales: "$total",
+          amount: "$amount",
         },
       },
       {
         $group: {
-          _id: '$month',
-          totalAvenue: { $sum: '$sales' },
-          total: { $sum: '$amount' },
+          _id: "$month",
+          totalAvenue: { $sum: "$sales" },
+          total: { $sum: "$amount" },
+        },
+      },
+      {
+        $sort: {
+          _id: 1,
         },
       },
     ]);
@@ -146,3 +135,4 @@ exports.getIncome = async (req, res) => {
     res.status(500).json(err);
   }
 };
+

@@ -127,7 +127,8 @@ exports.createComment = async (req, res) => {
     const review = {
       rating,
       comment, 
-      user
+      user,
+      createAt: Date.now()
     }
 
     const product = await Product.findById(req.params.productId)
@@ -142,7 +143,8 @@ exports.createComment = async (req, res) => {
       product.reviews.forEach(review => {
         if(review.user.toString() === req.body.user){
           review.rating = rating,
-            review.comment = comment
+          review.comment = comment,
+          review.createAt = Date.now()
         }
       })
     }else{
@@ -159,16 +161,16 @@ exports.createComment = async (req, res) => {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
+exports.getUnsoldProduct = async (req, res) => {
+  try{
+    const product = await Product.aggregate([
+      {
+        $match: { sold: 0},
+      },
+    ])
+    res.status(200).json(product)
+  }catch(error){
+    res.status(500).json({ message: error.message })
+  }
+}
 

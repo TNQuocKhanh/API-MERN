@@ -7,15 +7,15 @@ exports.createPayment = async (req, res) => {
             "payment_method": "paypal"
         },
         "redirect_urls": {
-          "return_url": "http://localhost:5000/api/success",
-          "cancel_url": "http://localhost:5000/api/cancel"
+          "return_url": `${process.env.SERVER_URL}api/success`,
+          "cancel_url": `${process.env.SERVER_URL}api/cancel`
         },
         "transactions": [{
             "item_list": {
                 "items": [{
                     "name": "Iphone 4S",
                     "sku": "001",
-                    "price": "25.00",
+                    "price": "27.00",
                     "currency": "USD",
                     "quantity": 1
                 }]
@@ -51,10 +51,12 @@ exports.paymentSuccess = async ( req, res) => {
         "transactions": [{
             "amount": {
                 "currency": "USD",
-                "total": "25.00"
+                "total": "30.00"
             }
         }]
     };
+
+  console.log('==', req)
     paypal.payment.execute(paymentId, execute_payment_json, function(error, payment) {
         if (error) {
             console.log(error.response);

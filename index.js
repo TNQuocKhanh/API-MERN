@@ -5,7 +5,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const paypal = require('paypal-rest-sdk')
-const ejs = require('ejs')
 const session = require('express-session')
 const passport = require('passport')
 
@@ -43,16 +42,6 @@ app.use(session({
 app.use(passport.initialize())
 app.use(passport.session())
 
-app.set('view engine', 'ejs');
-app.get('/', (req, res) => res.render('index'))
-
-app.get('/auth', (req, res) => res.render('auth')) 
-
-app.get('/success', (req, res) => {
- console.log('==', userProfile)
-  res.render('home', {user: userProfile});
-});
-
 app.get('/error', (req, res) => res.send("error logging in"));
 
 passport.serializeUser(function(user, cb) {
@@ -67,7 +56,7 @@ const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:5000/auth/google/callback"
+    callbackURL: `${process.env.SERVER_URL}auth/google/callback`
   },
   function(accessToken, refreshToken, profile, done) {
     console.log('==', accessToken)
@@ -82,8 +71,9 @@ app.get('/auth/google',
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/error' }),
   function(req, res) {
-    // Successful authentication, redirect success.
-    res.redirect('/success');
+    res.redirect(`${process.env.AUTH_CLIENT_URL}product`);
+    console.log('==userProfile', userProfile)
+
   });
 
 

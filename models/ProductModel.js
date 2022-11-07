@@ -49,6 +49,9 @@ const productSchema = new mongoose.Schema({
       comment: {
         type: String,
       },
+      createAt: {
+        type: Date,
+      },
     }],
     supplier: {
       id: {

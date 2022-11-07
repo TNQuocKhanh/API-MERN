@@ -23,6 +23,7 @@ const OrderSchema = new mongoose.Schema({
     type: String,
     default: 'PROCESSING',
     enum: [
+      'PROCESSING',
       'CONFIRMED',
       'DELIVERING',
       'DONE',

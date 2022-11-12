@@ -40,6 +40,12 @@ exports.signin = (req, res) => {
       { _id: user._id },
       process.env.SECRET
     );
+
+    if(user.status === 0){
+      return res.status(400).json({
+        error: 'User was blocked',
+      })
+    }
     res.cookie('t', token, { expire: new Date() + 9999 });
     return res.json({ token, user });
   });

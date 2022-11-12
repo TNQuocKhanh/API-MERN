@@ -44,6 +44,7 @@ exports.signin = (req, res) => {
     if(user.status === 0){
       return res.status(400).json({
         error: 'User was blocked',
+        code: "BLOCK",
       })
     }
     res.cookie('t', token, { expire: new Date() + 9999 });

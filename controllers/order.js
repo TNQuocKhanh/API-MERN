@@ -108,9 +108,6 @@ exports.getIncome = async (req, res) => {
   try {
     const income = await Order.aggregate([
       {
-        $match: { createdAt: { $gte: previousMonth } },
-      },
-      {
         $project: {
           month: { $month: "$createdAt" },
           sales: "$total",

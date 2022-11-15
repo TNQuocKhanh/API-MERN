@@ -4,6 +4,12 @@ const Product = require("../models/ProductModel");
 const router = express.Router();
 const mongoose = require("mongoose");
 const _ = require("lodash");
+const mailer = require('../utils/mailer');
+const User = require('../models/UserModel')
+
+const formatDateTime = (date) => {
+    return `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`
+}
 
 exports.createOrder = async (req, res) => {
   const data = new Order({
@@ -19,6 +25,14 @@ exports.createOrder = async (req, res) => {
 
   try {
     const dataToSave = await data.save();
+
+    const userId = _.get(data, 'user')
+
+    const info= await  User.findById(req.body.user)
+    mailer.sendMail(info.email,
+      'HDKMart',
+     '<p>Cảm ơn quý khách đã mua hàng tại cửa hàng của chúng tôi.</p><p>Thông tin chi tiết đơn hàng: </p><ul><li>Tên người đặt hàng: ' + info.name + '</li> <li>Địa chỉ nhận hàng: ' + req.body.address + '</li><li>Ngày đặt hàng: ' + formatDateTime(dataToSave.createdAt) + '</li><li>Tổng thanh toán: ' + req.body.total + '</li> </ul>'
+    )
     res.status(200).json(dataToSave);
   } catch (error) {
     res.status(400).json({ message: error.message });

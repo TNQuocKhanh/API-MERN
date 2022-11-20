@@ -3,8 +3,8 @@ const paypal = require('paypal-rest-sdk');
 exports.createPayment = async (req, res) => {
   console.log('====createPayment', req.body);
 
-  //   const sum = req.body.total;
-  const sum = '50';
+  const sum = req.body.total;
+  // const sum = '50';
 
   const create_payment_json = {
     intent: 'sale',
@@ -44,7 +44,8 @@ exports.createPayment = async (req, res) => {
     } else {
       for (let i = 0; i < payment.links.length; i++) {
         if (payment.links[i].rel === 'approval_url') {
-          res.redirect(payment.links[i].href);
+          // res.redirect(payment.links[i].href);
+          res.status(200).json({ data: payment.links[i].href });
         }
       }
     }

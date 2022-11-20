@@ -65,8 +65,7 @@ exports.signin = (req, res) => {
       expiresIn: '4h',
     });
 
-    // if (user.status === 0 || !user.verify) {
-    if (user.status === 0) {
+     if (user.status === 0 || !user.verify) {
       return res.status(400).json({
         error: 'User was blocked',
         code: 'BLOCK',

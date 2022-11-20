@@ -41,6 +41,10 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+    verify: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
@@ -76,4 +80,3 @@ userSchema.methods = {
 };
 
 module.exports = mongoose.model('User', userSchema);
-

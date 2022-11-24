@@ -1,10 +1,7 @@
 const paypal = require('paypal-rest-sdk');
 
 exports.createPayment = async (req, res) => {
-  console.log('====createPayment', req.body);
-
   const sum = req.body.total;
-  // const sum = '50';
 
   const create_payment_json = {
     intent: 'sale',
@@ -17,21 +14,9 @@ exports.createPayment = async (req, res) => {
     },
     transactions: [
       {
-        // item_list: {
-        //   items: [
-        //     {
-        //       name: 'Iphone 4S',
-        //       sku: '001',
-        //       price: '50.00',
-        //       currency: 'USD',
-        //       quantity: 1,
-        //     },
-        //   ],
-        // },
         amount: {
           currency: 'USD',
           total: sum,
-          //   total: '50.00',
         },
         description: 'HDK Mart - Vi mot suc khoe cong dong',
       },
@@ -53,7 +38,6 @@ exports.createPayment = async (req, res) => {
 };
 
 exports.paymentSuccess = async (req, res) => {
-  console.log('===req=======================>>>>>>>', req.query);
   const payerId = req.query.PayerID;
   const paymentId = req.query.paymentId;
   const sum = req.query.total;

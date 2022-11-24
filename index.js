@@ -31,7 +31,7 @@ paypal.configure({
 const app = express();
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: process.env.AUTH_CLIENT_URL,
   credentials: true,
   optionSuccessStatus: 200,
 };

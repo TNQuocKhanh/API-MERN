@@ -31,13 +31,14 @@ paypal.configure({
 const app = express();
 
 const corsOptions = {
-  origin: process.env.AUTH_CLIENT_URL,
+  origin: "*",
+  methods: "GET,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
 
-// app.use(cors());
+//app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 
@@ -109,5 +110,5 @@ app.use('/api', paymentRoutes);
 app.use('/api', organizerRoute);
 
 app.listen(PORT, () => {
-  console.log(`Server started at http://localhost:${PORT}`);
+  console.log(`Server started at:${PORT}`);
 });

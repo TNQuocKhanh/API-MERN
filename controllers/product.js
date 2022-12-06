@@ -164,6 +164,8 @@ exports.getUnsoldProduct = async (req, res) => {
   const date = new Date()
   const lastWeek = new Date(date.setDate(date.getDate()-7));
 
+  const data = await Product.find()
+
   try {
     const product = await Product.aggregate([
       {
@@ -175,7 +177,15 @@ exports.getUnsoldProduct = async (req, res) => {
         },
       }
     ])
-    res.status(200).json(product)
+
+    const rate = ((product.length/data.length)*100).toFixed(2)
+
+    res.status(200).json({
+      product,
+      total: data.length,
+      count: product.length,
+      rate,
+    })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -185,6 +195,8 @@ exports.getFeatureProduct = async (req, res) => {
   const date = new Date()
   const lastMonth = new Date(date.setMonth(date.getMonth()))
   const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
+
+  const data = await Product.find()
 
   try {
     const product = await Product.aggregate([
@@ -197,7 +209,15 @@ exports.getFeatureProduct = async (req, res) => {
         },
       }
     ])
-    res.status(200).json(product)
+
+    const rate = ((product.length/data.length)*100).toFixed(2)
+
+    res.status(200).json({
+      product: product,
+      total: data.length,
+      count: product.length,
+      rate: rate
+    })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

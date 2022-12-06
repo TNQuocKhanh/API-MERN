@@ -2,7 +2,7 @@ const express = require('express');
 const Product = require('../models/ProductModel');
 const router = express.Router();
 const mongoose = require('mongoose');
-const _ =  require('lodash')
+const _ = require('lodash')
 
 exports.createProduct = async (req, res) => {
   const data = new Product({
@@ -35,22 +35,22 @@ exports.getAllProducts = async (req, res) => {
       res.json(data);
     } else {
       const data = await Product.find().populate('category')
-            .populate({
-               path: 'reviews',
-               populate: {
-                 path: 'user',
-                 model: 'User',
-               }
-            }).populate({
-               path: 'supplier',
-              populate: {
-                path: 'id',
-                model: 'Organizer',
-              }
-            })
+        .populate({
+          path: 'reviews',
+          populate: {
+            path: 'user',
+            model: 'User',
+          }
+        }).populate({
+          path: 'supplier',
+          populate: {
+            path: 'id',
+            model: 'Organizer',
+          }
+        })
       const dataToSave = _.map(data, (item) => {
-        return _.omit(item.toJSON(), 
-      ['reviews.user.hashed_password', 'reviews.user.salt'])
+        return _.omit(item.toJSON(),
+          ['reviews.user.hashed_password', 'reviews.user.salt'])
       })
       res.json(dataToSave);
     }
@@ -62,20 +62,20 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   try {
     const data = await Product.findById(req.params.productId).populate('category')
-            .populate({
-               path: 'reviews',
-               populate: {
-                 path: 'user',
-                 model: 'User',
-               }
-            }).populate({
-               path: 'supplier',
-               populate: {
-                path: 'id',
-                model: 'Organizer',
-              }
-            });
-    const dataToSave = _.omit(data.toJSON(), 
+      .populate({
+        path: 'reviews',
+        populate: {
+          path: 'user',
+          model: 'User',
+        }
+      }).populate({
+        path: 'supplier',
+        populate: {
+          path: 'id',
+          model: 'Organizer',
+        }
+      });
+    const dataToSave = _.omit(data.toJSON(),
       ['reviews.user.hashed_password', 'reviews.user.salt'])
     res.json(dataToSave);
   } catch (error) {
@@ -94,15 +94,15 @@ exports.updateProduct = async (req, res) => {
       updatedData,
       options
     ).populate('category')
-            .populate({
-               path: 'reviews',
-               populate: {
-                 path: 'user',
-                 model: 'User',
-               }
-            });
-    const dataToSave = _.omit(result.toJSON(), 
-  ['reviews.user.hashed_password', 'reviews.user.salt'])
+      .populate({
+        path: 'reviews',
+        populate: {
+          path: 'user',
+          model: 'User',
+        }
+      });
+    const dataToSave = _.omit(result.toJSON(),
+      ['reviews.user.hashed_password', 'reviews.user.salt'])
 
     res.send(dataToSave);
   } catch (error) {
@@ -126,7 +126,7 @@ exports.createComment = async (req, res) => {
 
     const review = {
       rating,
-      comment, 
+      comment,
       user,
       createAt: Date.now()
     }
@@ -134,29 +134,29 @@ exports.createComment = async (req, res) => {
     const product = await Product.findById(req.params.productId)
 
     const findUserReview = product.reviews.find(item =>
-        item.user.toString()===req.body.user
+      item.user.toString() === req.body.user
     )
 
     const isReviewed = findUserReview ? true : false
 
-    if(isReviewed){
+    if (isReviewed) {
       product.reviews.forEach(review => {
-        if(review.user.toString() === req.body.user){
+        if (review.user.toString() === req.body.user) {
           review.rating = rating,
-          review.comment = comment,
-          review.createAt = Date.now()
+            review.comment = comment,
+            review.createAt = Date.now()
         }
       })
-    }else{
-    product.reviews.push(review)
+    } else {
+      product.reviews.push(review)
     }
 
-    product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0)/product.reviews.length
+    product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length
 
     await product.save()
     res.status(200).json({ success: true })
 
-  }catch(error){
+  } catch (error) {
     res.status(500).json({ message: error.message })
   }
 }
@@ -193,4 +193,3 @@ exports.getFeatureProduct = async (req, res) => {
     res.status(500).json({ message: error.message })
   }
 }
-

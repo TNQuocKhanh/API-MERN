@@ -2,7 +2,7 @@ const express = require('express');
 const Product = require('../models/ProductModel');
 const router = express.Router();
 const mongoose = require('mongoose');
-const _ = require('lodash')
+const _ = require('lodash');
 
 exports.createProduct = async (req, res) => {
   const data = new Product({
@@ -162,7 +162,7 @@ exports.createComment = async (req, res) => {
 }
 exports.getUnsoldProduct = async (req, res) => {
   const date = new Date()
-  const lastMonth = new Date(date.setMonth(date.getMonth()-1));
+  const lastWeek = new Date(date.setDate(date.getDate()-7));
 
   try {
     const product = await Product.aggregate([
@@ -170,7 +170,7 @@ exports.getUnsoldProduct = async (req, res) => {
         $match: {
           $and: [
             { sold: 0 },
-            { createdAt: { $lte: lastMonth } },
+            { createdAt: { $lte: lastWeek } },
           ]
         },
       }
@@ -182,10 +182,19 @@ exports.getUnsoldProduct = async (req, res) => {
 }
 
 exports.getFeatureProduct = async (req, res) => {
+  const date = new Date()
+  const lastMonth = new Date(date.setMonth(date.getMonth()))
+  const previousMonth = new Date(new Date().setMonth(lastMonth.getMonth() - 1));
+
   try {
     const product = await Product.aggregate([
       {
-        $match:{ sold: { $gte: 15} },
+        $match:{
+          $and: [
+            { sold: { $gte: 10}},
+            { createdAt: { $lte: lastMonth, $gte: previousMonth}},
+          ]
+        },
       }
     ])
     res.status(200).json(product)

@@ -160,16 +160,36 @@ exports.createComment = async (req, res) => {
     res.status(500).json({ message: error.message })
   }
 }
-
 exports.getUnsoldProduct = async (req, res) => {
-  try{
+  const date = new Date()
+  const lastMonth = new Date(date.setMonth(date.getMonth()-1));
+
+  try {
     const product = await Product.aggregate([
       {
-        $match: { sold: 0},
-      },
+        $match: {
+          $and: [
+            { sold: 0 },
+            { createdAt: { $lte: lastMonth } },
+          ]
+        },
+      }
     ])
     res.status(200).json(product)
-  }catch(error){
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+exports.getFeatureProduct = async (req, res) => {
+  try {
+    const product = await Product.aggregate([
+      {
+        $match:{ sold: { $gte: 15} },
+      }
+    ])
+    res.status(200).json(product)
+  } catch (error) {
     res.status(500).json({ message: error.message })
   }
 }

@@ -8,7 +8,7 @@ Thành viên:
 2. Nguyễn Kỳ Hải           19110197
 3. Diệp Thái Dương         19110009
 ## Link project: https://green-market-hdk-izrrhd2plq-uc.a.run.app 
-### Link báo cáo: https://drive.google.com/file/d/1BF5S9y1J3qSlA_rR2zJ_jWoDyNGM4iSQ/view?usp=sharing
+### Link báo cáo: https://drive.google.com/file/d/1LFgLfj8bnBaEsSn88rnBH2ZgN1oJP6mC/view?usp=sharing
 
 Project được xây dựng bằng công nghệ MERN (MongoDB, Express, ReactJS và NodeJS) được deploy bằng Google Cloud Run bằng cách sử dụng Docker image.\
 Link backend: https://github.com/TNQuocKhanh/API-MERN .\
